@@ -43,4 +43,8 @@ public class User {
                 ", password='" + password + '\'' +
                 '}';
     }
+
+    public User(Integer id) {
+        this.id = id;
+    }
 }
