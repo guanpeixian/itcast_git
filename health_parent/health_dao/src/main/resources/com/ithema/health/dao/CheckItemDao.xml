@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itheima.health.dao.CheckItemDao">
+    <!--查询所有-->
+    <select id="findAll" resultType="com.itheima.health.pojo.CheckItem">
+        select * from t_checkitem;
+    </select>
+
+    <!--添加检查项-->
+    <insert id="add" parameterType="com.itheima.health.pojo.CheckItem">
+        insert into t_checkitem
+        (code,name,sex,age,price,type,remark,attention)
+        values
+        (#{code},#{name},#{sex},#{age},#{price},#{type},#{remark},#{attention});
+    </insert>
+
+    <!--分页查询 第一种方法-->
+    <!--问题：1：麻烦；2：不能通用，当前切换数据库的时候改动的代码多。-->
+    <!--<select id="total" resultType="java.lang.Long">
+        select count(*) from t_checkitem c
+        <include refid="pageWhere"/>
+    </select>
+    <select id="findPage" resultType="com.itheima.health.pojo.CheckItem">
+        select * from t_checkitem
+        <include refid="pageWhere"/>
+        limit #{currentPage},#{pageSize}
+    </select>
+    <sql id="pageWhere">
+        <where>
+            <if test="queryString.code != null">
+                and c.code = #{queryString.code}
+            </if>
+            <if test="queryString.name != null and queryString.name != ''">
+                and c.name like "%"#{queryString.name}"%"
+            </if>
+        </where>
+    </sql>-->
+
+    <!--分页条件查询 第二种方法-->
+    <select id="findByCondition" resultType="com.itheima.health.pojo.CheckItem">
+    select * from t_checkitem
+        <if test="value != null and value.length > 0">
+             where code like #{value} or name like #{value}
+        </if>
+    </select>
+    <!-- Mybatis 动态参数赋值 DynamicContext
+     <if>标签里的变量，如果参数类型是基本数据类型，只能用 value 或 _parameter，这个是由它的底层ognl表达式决定的。如果参数类型是对象类型，则可以填它的属性。另外，使用#的参数可以是形参名也可以是value
+    -->
+
+    <!--检查-->
+    <select id="findCountByCheckItemId" resultType="int">
+        select count(*) from t_checkgroup_checkitem
+        where checkitem_id = #{id}
+    </select>
+    <!--删除-->
+    <delete id="deleteById">
+        delete from t_checkitem where id = #{id}
+    </delete>
+
+    <!--通过id查询-->
+    <select id="findById" resultType="com.itheima.health.pojo.CheckItem">
+        select * from t_checkitem where id = #{id};
+    </select>
+
+    <!--更新-->
+    <update id="update">
+        update t_checkitem
+        set code=#{code},
+            name=#{name},
+            sex=#{sex},
+            age=#{age},
+            price=#{price},
+            type=#{type},
+            remark=#{remark},
+            attention=#{attention}
+        where id=#{id}
+    </update>
+</mapper>
